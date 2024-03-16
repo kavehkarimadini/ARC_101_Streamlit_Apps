@@ -22,15 +22,15 @@ def load_data():
     result = df.groupby(columns_name).size().reset_index()
     # print(type(result))
     res_cols = result.columns.tolist()
-    print("res_cols: ",res_cols[-1],type(res_cols[-1]))
+    # print("res_cols: ",res_cols[-1],type(res_cols[-1]))
     final = result.rename(columns={res_cols[-1]:"Frequency"})
-    print(final.columns.tolist())
+    # print(final.columns.tolist())
     return final[final["Frequency"]>3]
 
 def filter_labels(F_df,label):
     return F_df[F_df[target_col]==label]
 
-def plotly_bar_func(df,labels,label,x_col,y_col):
+def plotly_bar_func(df,labels,label,x_col,y_col,color_col):
     # freq = freq.Country.value_counts().reset_index().rename(columns={"index": "x"})
 
     # read in 3d volcano surface data
@@ -131,7 +131,7 @@ if label in labels:
     edited_df = st.data_editor(filtered_df, num_rows="dynamic",use_container_width=st.session_state.use_container_width)
 else:
     edited_df = st.data_editor(df, num_rows="dynamic",use_container_width=st.session_state.use_container_width)
-plt_fig = plotly_bar_func(df,labels,label,columns[0],columns[-1])
+plt_fig = plotly_bar_func(df,labels,label,columns[-3],columns[-1],columns[-2])
 st.plotly_chart(plt_fig)
 
 # favorite_command = edited_df.loc[edited_df["rating"].idxmax()]["command"]
