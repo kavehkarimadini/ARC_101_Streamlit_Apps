@@ -31,72 +31,19 @@ def filter_labels(F_df,label):
     return F_df[F_df[target_col]==label]
 
 def plotly_bar_func(df,labels,label,x_col,y_col,color_col):
-    # freq = freq.Country.value_counts().reset_index().rename(columns={"index": "x"})
-
-    # read in 3d volcano surface data
-    # df_v = pd.read_csv("https://raw.githubusercontent.com/plotly/datasets/master/volcano.csv")
-
-    # Initialize figure with subplots
-    # fig = make_subplots(
-    #     rows=2, cols=2,
-    #     # column_widths=[0.6, 0.4],
-    #     # row_heights=[0.4, 0.6],
-    #     subplot_titles=['Bar Chart', 'Pie Chart'],
-    #     specs=[[{"type": 'bar', "colspan": 2},None],[{"type": 'pie', "colspan": 2},None]])#, {"type": "bar"}],[            None                    , {"type": "surface"}]])
-
-    # Add scattergeo globe map of volcano locations
     if label not in labels:
-        # fig.add_trace(
-        #     go.Bar(x=df[x_col],y=df[y_col], marker=dict(color="crimson"), showlegend=False),
-        #     row=1, col=1
-        # )
-        # fig.add_trace(
-        #     go.Pie(labels=df[x_col],values=df[y_col], name='Pie Chart'),
-        #     row=2, col=1
-        # )
         # Create a bar chart
-        fig = px.bar(df, x=x_col, y=y_col, color=df["labels"],
+        fig = px.bar(df, x=x_col, y=y_col, color=df[color_col],
                     title='Frequency of Text Elements',
                     labels={'count':'Frequency', 'text':'Text Elements'},
                     template='plotly_dark')
     else:
         filtered_df = filter_labels(df,label)
-        # fig.add_trace(
-        #     go.Bar(x=filtered_df[x_col],y=filtered_df[y_col], marker=dict(color="crimson"), showlegend=False),
-        #     row=1, col=1
-        # )
-        # fig.add_trace(
-        #     go.Pie(labels=filtered_df[x_col],values=filtered_df[y_col], name='Pie Chart'),
-        #     row=2, col=1
-        # )
-        fig = px.bar(filtered_df, x=x_col, y=y_col, color=filtered_df["labels"],
+        fig = px.bar(filtered_df, x=x_col, y=y_col, color=filtered_df[color_col],
             title='Frequency of Text Elements',
             labels={'count':'Frequency', 'text':'Text Elements'},
             template='plotly_dark')
-    # # Add locations bar chart
-    # fig.add_trace(
-    #     go.Bar(x=freq["x"][0:10],y=freq["Country"][0:10], marker=dict(color="crimson"), showlegend=False),
-    #     row=1, col=2
-    # )
-
-    # # Add 3d surface of volcano
-    # fig.add_trace(
-    #     go.Surface(z=df_v.values.tolist(), showscale=False),
-    #     row=2, col=2
-    # )
-
-    # # Update geo subplot properties
-    # fig.update_geos(
-    #     projection_type="orthographic",
-    #     landcolor="white",
-    #     oceancolor="MidnightBlue",
-    #     showocean=True,
-    #     lakecolor="LightBlue"
-    # )
-
-    # Rotate x-axis labels
-    # fig.update_xaxes(tickangle=45)
-    # Customize layout
+        
     fig.update_layout(
         xaxis_title='Text Elements',
         yaxis_title='Frequency',
@@ -104,6 +51,26 @@ def plotly_bar_func(df,labels,label,x_col,y_col,color_col):
         font=dict(family="Courier New, monospace", size=18, color="white")
     )
     return fig
+
+def plotly_sunburst_func(df,labels,label,text_col,label_col,freq_col):
+    if label not in labels:
+        # Create a sunburst chart
+        fig = px.sunburst(
+                            df,
+                            path=[label_col, text_col],
+                            values=freq_col,
+                        )
+    else:
+        filtered_df = filter_labels(df,label)
+        # Create a sunburst chart
+        fig = px.sunburst(
+                            filtered_df,
+                            path=[label_col, text_col],
+                            values=freq_col,
+                        )
+    return fig
+
+
 # Boolean to resize the dataframe, stored as a session state variable
 st.checkbox("Use container width", value=False, key="use_container_width")
 df = load_data()
@@ -132,8 +99,9 @@ if label in labels:
 else:
     edited_df = st.data_editor(df, num_rows="dynamic",use_container_width=st.session_state.use_container_width)
 plt_fig = plotly_bar_func(df,labels,label,columns[-3],columns[-1],columns[-2])
+sunburst_fig = plotly_sunburst_func(df,labels,label,columns[0],columns[1],columns[2])
 st.plotly_chart(plt_fig)
-
+st.plotly_chart(sunburst_fig)
 # favorite_command = edited_df.loc[edited_df["rating"].idxmax()]["command"]
 # st.markdown(f"Your favorite command is **{favorite_command}** 🎈")
 # Display the dataframe and allow the user to stretch the dataframe
