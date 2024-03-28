@@ -136,19 +136,25 @@ label = st.selectbox(
  "What do you want the x variable to be?",
  labels,index=None,placeholder="choose a label"
 )
-if label in labels:
-    filtered_df = filter_labels(df,label)
-    edited_df = st.data_editor(filtered_df, num_rows="dynamic",use_container_width=st.session_state.use_container_width)
-else:
-    edited_df = st.data_editor(df, num_rows="dynamic",use_container_width=st.session_state.use_container_width)
+# if label in labels:
+#     filtered_df = filter_labels(df,label)
+#     edited_df = st.data_editor(filtered_df, num_rows="dynamic",use_container_width=st.session_state.use_container_width)
+# else:
+#     edited_df = st.data_editor(df, num_rows="dynamic",use_container_width=st.session_state.use_container_width)
 plt_fig = plotly_bar_NER_func(df,labels,label,columns[-3],columns[-1],columns[-2])
 sunburst_fig = plotly_sunburst_func(df,labels,label,columns[0],columns[1],columns[2])
-tab1, tab2 = st.tabs(["Bar Chart NER", "Sun Burst Chart NER"])
+tab1, tab2, tab3 = st.tabs(["Data Frame","Bar Chart NER", "Sun Burst Chart NER"])
 with tab1:
+    if label in labels:
+        filtered_df = filter_labels(df,label)
+        edited_df = st.data_editor(filtered_df, num_rows="dynamic",use_container_width=st.session_state.use_container_width)
+    else:
+        edited_df = st.data_editor(df, num_rows="dynamic",use_container_width=st.session_state.use_container_width)
+with tab2:
     # Use the Streamlit theme.
     # This is the default. So you can also omit the theme argument.
     st.plotly_chart(plt_fig, theme="streamlit", use_container_width=True)
-with tab2:
+with tab3:
     # Use the native Plotly theme.
     st.plotly_chart(sunburst_fig, theme="streamlit", use_container_width=True)
 # st.plotly_chart(plt_fig)
