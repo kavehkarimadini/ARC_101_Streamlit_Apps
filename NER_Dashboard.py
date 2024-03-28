@@ -143,8 +143,16 @@ else:
     edited_df = st.data_editor(df, num_rows="dynamic",use_container_width=st.session_state.use_container_width)
 plt_fig = plotly_bar_NER_func(df,labels,label,columns[-3],columns[-1],columns[-2])
 sunburst_fig = plotly_sunburst_func(df,labels,label,columns[0],columns[1],columns[2])
-st.plotly_chart(plt_fig)
-st.plotly_chart(sunburst_fig)
+tab1, tab2 = st.tabs(["Bar Chart NER", "Sun Burst Chart NER"])
+with tab1:
+    # Use the Streamlit theme.
+    # This is the default. So you can also omit the theme argument.
+    st.plotly_chart(plt_fig, theme="streamlit", use_container_width=True)
+with tab2:
+    # Use the native Plotly theme.
+    st.plotly_chart(sunburst_fig, theme="streamlit", use_container_width=True)
+# st.plotly_chart(plt_fig)
+# st.plotly_chart(sunburst_fig)
 
 senti_df = load_data_senti()
 senti_df_col_names = senti_df.columns.tolist()
